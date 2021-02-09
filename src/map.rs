@@ -43,37 +43,41 @@ impl Map {
             && self.tiles[map_idx(point.x, point.y)] == TileType::Asphalt
     }
 
-    pub fn render(&self, ctx: &mut BTerm) {
-        for y in 0..SCREEN_HEIGHT {
-            for x in 0..SCREEN_WIDTH {
-                let idx = map_idx(x, y);
-                match self.tiles[idx] {
-                    TileType::Asphalt => {
-                        ctx.set(
-                            x,
-                            y,
-                            RGB::from_u8(25, 25, 25),
-                            BLACK,
-                            to_cp437('.'),
-                        );
-                    }
-                    TileType::Wall => {
-                        ctx.set(
-                            x,
-                            y,
-                            SLATE_GRAY,
-                            BLACK,
-                            to_cp437('#'),
-                        );
-                    }
-                    _ => {
-                        ctx.set(
-                            x,
-                            y,
-                            RED,
-                            PINK,
-                            to_cp437('!'),
-                        );
+    pub fn render(&self, ctx: &mut BTerm, camera: &Camera) {
+        ctx.set_active_console(0); // set console to base layer (map layer)
+
+        for y in camera.top_y .. camera.bottom_y {
+            for x in camera.left_x .. camera.right_x {
+                if self.in_bounds(Point::new(x, y)) {
+                    let idx = map_idx(x, y);
+                    match self.tiles[idx] {
+                        TileType::Asphalt => {
+                            ctx.set(
+                                x - camera.left_x,     // draw relative to camera pos
+                                y - camera.top_y,
+                                RGB::from_u8(25, 25, 25),
+                                BLACK,
+                                to_cp437('.'),
+                            );
+                        }
+                        TileType::Wall => {
+                            ctx.set(
+                                x - camera.left_x,
+                                y - camera.top_y,
+                                SLATE_GRAY,
+                                BLACK,
+                                to_cp437('#'),
+                            );
+                        }
+                        _ => {
+                            ctx.set(
+                                x - camera.left_x,
+                                y - camera.top_y,
+                                RED,
+                                PINK,
+                                to_cp437('!'),
+                            );
+                        }
                     }
                 }
             }
