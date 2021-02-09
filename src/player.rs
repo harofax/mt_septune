@@ -16,9 +16,9 @@ impl Player {
         ctx.set(
             self.position.x - camera.left_x, // draw relative to camera
             self.position.y - camera.top_y,
-            YELLOW,
+            RGB::from_u8(255, 204, 51),
             BLACK,
-            to_cp437('☺'),
+            to_cp437('@'),
         );
     }
 

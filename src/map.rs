@@ -55,18 +55,18 @@ impl Map {
                             ctx.set(
                                 x - camera.left_x,     // draw relative to camera pos
                                 y - camera.top_y,
-                                RGB::from_u8(25, 25, 25),
-                                BLACK,
-                                to_cp437('.'),
+                                RGB::from_u8(26, 26, 32),
+                                RGB::from_u8(11, 11, 15),
+                                to_cp437('░'),
                             );
                         }
                         TileType::Wall => {
                             ctx.set(
                                 x - camera.left_x,
                                 y - camera.top_y,
-                                SLATE_GRAY,
-                                BLACK,
-                                to_cp437('#'),
+                                RGB::from_u8(140, 123, 157),
+                                RGB::from_u8(165, 152, 179),
+                                to_cp437('╪'),
                             );
                         }
                         _ => {

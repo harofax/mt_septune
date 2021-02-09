@@ -5,8 +5,8 @@ mod camera;
 
 mod prelude {
     pub use bracket_lib::prelude::*;
-    pub const SCREEN_WIDTH: i32 = 90;
-    pub const SCREEN_HEIGHT: i32 = 60;
+    pub const SCREEN_WIDTH: i32 = 80;
+    pub const SCREEN_HEIGHT: i32 = 45;
     pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH / 2;
     pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT / 2;
 
@@ -57,11 +57,12 @@ fn main() -> BError {
         .with_title("Mt. Septune")
         .with_fps_cap(30.0)
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
-        .with_tile_dimensions(16, 16)
+        .with_tile_dimensions(32, 32)
         .with_resource_path("resources/")
-        .with_font("haro_16x16.png", 16, 16)
-        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "haro_16x16.png")
-        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "haro_16x16.png") // no bg => transparency, new layer basically
+        .with_font("haro_32x32.png", 32, 32)
+        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "haro_32x32.png")
+        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "haro_32x32.png") // no bg => transparency, new layer basically
+        .with_automatic_console_resize(false)
         .build()?;
 
     main_loop(context, State::new())
