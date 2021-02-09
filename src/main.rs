@@ -20,11 +20,11 @@ struct State {
 
 impl State {
     fn new() -> Self {
+        let mut rng = RandomNumberGenerator::new();
+        let map_builder =  MapBuilder::new(&mut rng);
         Self {
-            map: Map::new(),
-            player: Player::new(
-                Point::new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-            ),
+            map: map_builder.map,
+            player: Player::new(map_builder.player_start),
         }
     }
 }
@@ -42,7 +42,7 @@ fn main() -> BError {
     let context = BTermBuilder::new()
         .with_font("haro_16x16.png", 16, 16)
         .with_tile_dimensions(16, 16)
-        .with_automatic_console_resize(true)
+        .with_automatic_console_resize(false)
         .with_simple_console(SCREEN_WIDTH, SCREEN_HEIGHT, "haro_16x16.png")
         .with_title("Mt. Septune")
         .with_fps_cap(30.0)
