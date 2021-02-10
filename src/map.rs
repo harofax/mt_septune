@@ -42,46 +42,5 @@ impl Map {
         self.in_bounds(point)
             && self.tiles[map_idx(point.x, point.y)] == TileType::Asphalt
     }
-
-    pub fn render(&self, ctx: &mut BTerm, camera: &Camera) {
-        ctx.set_active_console(0); // set console to base layer (map layer)
-
-        for y in camera.top_y .. camera.bottom_y {
-            for x in camera.left_x .. camera.right_x {
-                if self.in_bounds(Point::new(x, y)) {
-                    let idx = map_idx(x, y);
-                    match self.tiles[idx] {
-                        TileType::Asphalt => {
-                            ctx.set(
-                                x - camera.left_x,     // draw relative to camera pos
-                                y - camera.top_y,
-                                RGB::from_u8(26, 26, 32),
-                                RGB::from_u8(11, 11, 15),
-                                to_cp437('░'),
-                            );
-                        }
-                        TileType::Wall => {
-                            ctx.set(
-                                x - camera.left_x,
-                                y - camera.top_y,
-                                RGB::from_u8(140, 123, 157),
-                                RGB::from_u8(165, 152, 179),
-                                to_cp437('╪'),
-                            );
-                        }
-                        _ => {
-                            ctx.set(
-                                x - camera.left_x,
-                                y - camera.top_y,
-                                RED,
-                                PINK,
-                                to_cp437('!'),
-                            );
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
 
