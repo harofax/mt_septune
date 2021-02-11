@@ -7,10 +7,11 @@ pub fn player_input(
     ecs: &mut SubWorld,
     #[resource] map: &Map,
     #[resource] key: &Option<VirtualKeyCode>,
-    #[resource] camera: &mut Camera
+    #[resource] camera: &mut Camera,
+    #[resource] turn_state: &mut TurnState
 )
 {
-    if let (Some(key)) = key {
+    if let Some(key) = key {
         let delta = match key {
             VirtualKeyCode::Left => Point::new(-1, 0),
             VirtualKeyCode::Right => Point::new(1, 0),
@@ -27,6 +28,7 @@ pub fn player_input(
                 if map.can_enter_tile(destination) {
                     *pos = destination;
                     camera.on_player_move(destination);
+                    *turn_state = TurnState::PlayerTurn;
                 }
             });
         }
