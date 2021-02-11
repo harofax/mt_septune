@@ -13,6 +13,7 @@ mod prelude {
     pub const SCREEN_HEIGHT: i32 = 45;
     pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH / 2;
     pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT / 2;
+    pub const TURN_TIME: f32 = 60.0; // frame duration in millisecs
 
     pub use crate::map::*;
     pub use crate::map_builder::*;
@@ -32,6 +33,7 @@ use prelude::*;
 struct State {
     ecs: World,
     resources: Resources,
+    frame_time: f32,
     input_systems: Schedule,
     player_systems: Schedule,
     monster_systems: Schedule,
@@ -59,6 +61,7 @@ impl State {
         Self {
             ecs,
             resources,
+            frame_time: 0.0,
             input_systems: build_input_scheduler(),
             player_systems: build_player_scheduler(),
             monster_systems: build_monster_scheduler(),
@@ -76,8 +79,10 @@ impl GameState for State {
         ctx.set_active_console(1);
         ctx.cls();
 
+        self.frame_time += ctx.frame_time_ms;
         // -- Execute systems
         self.resources.insert(ctx.key);
+
 
         let current_state = self.resources.get::<TurnState>().unwrap().clone();
 
