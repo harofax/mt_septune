@@ -8,9 +8,18 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
             Render {
                 color: ColorPair::new(RGB::from_u8(255, 204, 51), BLACK),
                 glyph: to_cp437('@')
-            }
+            },
+            Health {current: 20, max: 20}
         )
     );
+}
+
+fn rat() -> (i32, String, FontCharType) {
+    (1, "Rat".to_string(), to_cp437('r'))
+}
+
+fn ombolonian() -> (i32, String, FontCharType) {
+    (2, "Ombolonian".to_string(), to_cp437('o'))
 }
 
 pub fn spawn_monster(
@@ -18,20 +27,21 @@ pub fn spawn_monster(
     rng: &mut RandomNumberGenerator,
     pos: Point
 ) {
+    let (hp, name, glyph) = match rng.roll_dice(1, 10) {
+        1..=8 => rat(),
+        _ => ombolonian()
+    };
+
     ecs.push(
         (Enemy,
-        pos,
-        Render {
-            color: ColorPair::new(RGB::from_u8(9, 170, 129), BLACK),
-            glyph : match rng.range(0, 4) {
-                0 => to_cp437('Å'),
-                1 => to_cp437('o'),
-                2 => to_cp437('Ω'),
-                3 => to_cp437('☻'),
-                _ => to_cp437('r'),
-            }
-        },
-        MovingRandomly{},
+         pos,
+         Render {
+             color: ColorPair::new(RGB::from_u8(9, 170, 129), BLACK),
+             glyph,
+         },
+         MovingRandomly{},
+         Health {current: hp, max: hp},
+         Name(name)
         )
     );
 }

@@ -79,10 +79,15 @@ impl GameState for State {
         ctx.set_active_console(1);
         ctx.cls();
 
+        ctx.set_active_console(2);
+        ctx.cls();
+
         self.frame_time += ctx.frame_time_ms;
         // -- Execute systems
         self.resources.insert(ctx.key);
 
+        ctx.set_active_console(0);
+        self.resources.insert(Point::from_tuple(ctx.mouse_pos()));
 
         let current_state = self.resources.get::<TurnState>().unwrap().clone();
 
@@ -109,11 +114,13 @@ fn main() -> BError {
         .with_title("Mt. Septune")
         .with_fps_cap(30.0)
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
-        .with_tile_dimensions(32, 32)
+        .with_tile_dimensions(16, 16)
         .with_resource_path("resources/")
-        .with_font("haro_32x32.png", 32, 32)
-        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "haro_32x32.png")
-        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "haro_32x32.png") // no bg => transparency, new layer basically
+        .with_font("haro_16x16.png", 16, 16)
+        .with_font("terminal8x8.png", 8, 8)
+        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "haro_16x16.png")
+        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "haro_16x16.png") // no bg => transparency, new layer basically
+        .with_simple_console_no_bg(SCREEN_WIDTH , SCREEN_HEIGHT , "haro_16x16.png")
         .with_automatic_console_resize(false)
         .build()?;
 
