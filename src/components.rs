@@ -21,6 +21,12 @@ pub struct WantsToMove {
     pub destination: Point
 }
 
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct WantsToAttack {
+    pub attacker: Entity,
+    pub victim: Entity
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Health {
     pub current: i32,
