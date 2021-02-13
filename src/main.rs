@@ -1,5 +1,4 @@
 mod map;
-//mod player;
 mod map_builder;
 mod camera;
 mod components;
@@ -29,6 +28,8 @@ mod prelude {
 }
 
 use prelude::*;
+use crate::components::TurnState::GameOver;
+use crate::prelude::NoiseType::WhiteNoise;
 
 struct State {
     ecs: World,
@@ -47,6 +48,7 @@ impl State {
         let map_builder =  MapBuilder::new(&mut rng);
 
         spawn_player(&mut ecs, map_builder.player_start);
+        spawn_cosmic_egg(&mut ecs, map_builder.egg_start);
 
         map_builder.rooms
             .iter()
@@ -66,6 +68,61 @@ impl State {
             player_systems: build_player_scheduler(),
             monster_systems: build_monster_scheduler(),
         }
+    }
+
+    fn game_over(&mut self, ctx: &mut BTerm) {
+        ctx.set_active_console(2);
+        ctx.print_color_centered(2, RED, BLACK, "DEATH APPROACHES");
+        ctx.print_color_centered(3, VIOLETRED2, BLACK, "----------------");
+        ctx.print_color_centered(5, WHITE, BLACK,
+                                 "The infinite void of the cosmos starts closing in.");
+        ctx.print_color(SCREEN_WIDTH/2 - 12, 6, WHITE, BLACK,
+                                 "------------------");
+        ctx.print_color_centered(9, GOLD, BLACK,
+                                 "The mystery of SEPTUNE will remain undiscovered.");
+        ctx.print_color(SCREEN_WIDTH/2 - 20, 10, MAGENTA, BLACK,
+                        "------------------");
+
+        ctx.print_color_centered(SCREEN_HEIGHT - 4, GREEN, BLACK, "Press ESC to try again.");
+
+        if let Some(VirtualKeyCode::Escape) = ctx.key {
+            self.reset_game_state();
+        }
+    }
+
+    fn victory(&mut self, ctx: &mut BTerm) {
+        ctx.set_active_console(2);
+        ctx.print_color_centered(2, GREEN, BLACK, "THE EGG HAS BEEN RETRIEVED");
+        ctx.print_color_centered(3, GOLD, BLACK, "--------------------------");
+        ctx.print_color_centered(5, WHITE, BLACK, "The surface of the Egg is impossibly detailed,");
+        ctx.print_color_centered(6, WHITE, BLACK, "and you feel the vibrations of creation itself coursing");
+        ctx.print_color_centered(7, WHITE, BLACK, "through every fiber of your being.");
+
+        ctx. print_color_centered(SCREEN_HEIGHT - 5, GREEN, BLACK, "Press ESC to start again.");
+
+        if let Some(VirtualKeyCode::Escape) = ctx.key {
+            self.reset_game_state();
+        }
+    }
+
+    fn reset_game_state(&mut self) {
+        self.ecs = World::default();
+        self.resources = Resources::default();
+        let mut rng = RandomNumberGenerator::new();
+        let map_builder = MapBuilder::new(&mut rng);
+
+        spawn_player(&mut self.ecs, map_builder.player_start);
+        spawn_cosmic_egg(&mut self.ecs, map_builder.egg_start);
+
+        map_builder.rooms
+            .iter()
+            .skip(1)
+            .map(|r| r.center())
+            .for_each(|pos| spawn_monster(&mut self.ecs, &mut rng, pos));
+
+        self.resources.insert(map_builder.map);
+        self.resources.insert(Camera::new(map_builder.player_start));
+        self.resources.insert(TurnState::AwaitingInput);
     }
 }
 
@@ -100,6 +157,12 @@ impl GameState for State {
             }
             TurnState::MonsterTurn => {
                 self.monster_systems.execute(&mut self.ecs, &mut self.resources)
+            }
+            TurnState::GameOver => {
+                self.victory(ctx);
+            }
+            TurnState::Victory => {
+                self.victory(ctx);
             }
         }
 
