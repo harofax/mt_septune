@@ -21,7 +21,7 @@ pub fn tooltips(
         .iter(ecs)
         .filter(|(_, pos, _)| **pos == map_pos )
         .for_each(|(entity, _, name)| {
-            let screen_pos = *mouse_pos*2;
+            let screen_pos = *mouse_pos*2 + Point::new(1, -1);
             let display = if let Ok(health) = ecs.entry_ref(*entity)
                 .unwrap()
                 .get_component::<Health>()

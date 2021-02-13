@@ -14,15 +14,15 @@ pub fn hud(ecs: &SubWorld) {
     draw_batch.target(2);
     draw_batch.print_centered(1, "Explore the Dungeon!");
     draw_batch.bar_horizontal(
-        Point::zero(),
-        SCREEN_WIDTH,
+        Point::new(0,1),
+        40,
         player_health.current,
         player_health.max,
         ColorPair::new(RED, BLACK)
     );
 
-    draw_batch.print_color_centered(
-        0,
+    draw_batch.print_color_centered_at(
+        Point::new(19, 0),
         format!(" Health: {} / {} ",
         player_health.current,
         player_health.max
