@@ -159,7 +159,7 @@ impl GameState for State {
                 self.monster_systems.execute(&mut self.ecs, &mut self.resources)
             }
             TurnState::GameOver => {
-                self.victory(ctx);
+                self.game_over(ctx);
             }
             TurnState::Victory => {
                 self.victory(ctx);
