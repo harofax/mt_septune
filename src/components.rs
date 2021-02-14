@@ -1,9 +1,10 @@
 pub use crate::prelude::*;
+use std::collections::HashSet;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Render {
-    pub color: ColorPair,
-    pub glyph: FontCharType
+    pub color : ColorPair,
+    pub glyph : FontCharType
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -13,15 +14,24 @@ pub struct Player;
 pub struct Enemy;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Item;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct CosmicEgg;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct MovingRandomly;
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ChasingPlayer;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsToMove {
     pub entity: Entity,
     pub destination: Point
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsToAttack {
     pub attacker: Entity,
     pub victim: Entity
@@ -36,11 +46,27 @@ pub struct Health {
 #[derive(Clone, PartialEq)]
 pub struct Name(pub String);
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct ChasingPlayer;
+#[derive(Clone, Debug, PartialEq)]
+pub struct FieldOfView {
+    pub visible_tiles : HashSet<Point>,
+    pub radius: i32,
+    pub is_dirty: bool
+}
 
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub struct Item;
+impl FieldOfView {
+    pub fn new(radius: i32) -> Self {
+        Self {
+            visible_tiles: HashSet::new(),
+            radius,
+            is_dirty: true
+        }
+    }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub struct CosmicEgg;
+    pub fn clone_dirty(&self) -> Self {
+        Self {
+            visible_tiles: HashSet::new(),
+            radius: self.radius,
+            is_dirty: true,
+        }
+    }
+}

@@ -3,13 +3,24 @@ use crate::prelude::*;
 #[system] // adds _system to fn name, so entity_render() becomes entity_render_system. also does other stuff, under da hood
 #[read_component(Point)]
 #[read_component(Render)]
-pub fn entity_render(ecs: &SubWorld, #[resource] camera: &Camera) {
+#[read_component(FieldOfView)]
+#[read_component(Player)]
+pub fn entity_render(
+    #[resource] camera: &Camera,
+    ecs: &SubWorld,
+) {
+    let mut renderables = <(&Point, &Render)>::query();
+    let mut fov = <&FieldOfView>::query().filter(component::<Player>());
+
     let mut draw_batch = DrawBatch::new();
-    draw_batch.target(1); // target console
+    draw_batch.target(1); // target console 1: entity layer
     let offset = Point::new(camera.left_x, camera.top_y);
 
-    <(&Point, &Render)>::query()
+    let player_fov = fov.iter(ecs).nth(0).unwrap();
+
+    renderables
         .iter(ecs)
+        .filter(|(pos, _)| player_fov.visible_tiles.contains(&pos))
         .for_each(|(pos, render)| {
             draw_batch.set(
                 *pos - offset,
@@ -17,6 +28,7 @@ pub fn entity_render(ecs: &SubWorld, #[resource] camera: &Camera) {
                 render.glyph
             );
         }
-        );
-    draw_batch.submit(5000).expect("Draw Batch Submit error, entity_render");
+    );
+
+    draw_batch.submit(5000).expect("Batch error");
 }

@@ -2,8 +2,8 @@ use crate::prelude::*;
 
 #[system]
 #[read_component(Health)]
-#[read_component(Player)]
 #[read_component(Point)]
+#[read_component(Player)]
 #[read_component(CosmicEgg)]
 pub fn end_turn(ecs: &SubWorld, #[resource] turn_state: &mut TurnState)
 {
@@ -14,7 +14,7 @@ pub fn end_turn(ecs: &SubWorld, #[resource] turn_state: &mut TurnState)
         .filter(component::<CosmicEgg>());
 
     let current_state = turn_state.clone();
-    let mut new_state = match turn_state {
+    let mut new_state = match current_state {
         TurnState::AwaitingInput => return,
         TurnState::PlayerTurn => TurnState::MonsterTurn,
         TurnState::MonsterTurn => TurnState::AwaitingInput,

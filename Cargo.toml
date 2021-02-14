@@ -7,5 +7,11 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bracket-lib = "~0.8.1"
+bracket-lib = "=0.8.1"
+bracket-algorithm-traits = "=0.8.2"
+bracket-color = "=0.8.2"
+bracket-geometry = "=0.8.2"
+bracket-noise = "=0.8.2"
+bracket-pathfinding = "=0.8.2"
+bracket-random = "=0.8.2"
 legion="=0.3.1"

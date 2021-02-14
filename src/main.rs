@@ -1,3 +1,5 @@
+#![warn(clippy::pedantic)]
+
 mod map;
 mod map_builder;
 mod camera;
@@ -8,8 +10,8 @@ mod turn_state;
 
 mod prelude {
     pub use bracket_lib::prelude::*;
-    pub const SCREEN_WIDTH: i32 = 112;
-    pub const SCREEN_HEIGHT: i32 = 63;
+    pub const SCREEN_WIDTH: i32 = 100;
+    pub const SCREEN_HEIGHT: i32 = 60;
     pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH/2;
     pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT/2;
     pub const TURN_TIME: f32 = 60.0; // frame duration in millisecs
@@ -28,8 +30,6 @@ mod prelude {
 }
 
 use prelude::*;
-use crate::components::TurnState::GameOver;
-use crate::prelude::NoiseType::WhiteNoise;
 
 struct State {
     ecs: World,
@@ -139,7 +139,7 @@ impl GameState for State {
         ctx.set_active_console(2);
         ctx.cls();
 
-        self.frame_time += ctx.frame_time_ms;
+        //self.frame_time += ctx.frame_time_ms;
         // -- Execute systems
         self.resources.insert(ctx.key);
 
@@ -153,7 +153,7 @@ impl GameState for State {
                 self.input_systems.execute(&mut self.ecs, &mut self.resources)
             }
             TurnState::PlayerTurn => {
-                self.player_systems.execute(&mut self.ecs, &mut self.resources)
+                self.player_systems.execute(&mut self.ecs, &mut self.resources);
             }
             TurnState::MonsterTurn => {
                 self.monster_systems.execute(&mut self.ecs, &mut self.resources)
@@ -180,11 +180,9 @@ fn main() -> BError {
         .with_tile_dimensions(16, 16)
         .with_resource_path("resources/")
         .with_font("haro_16x16.png", 16, 16)
-        .with_font("terminal8x8.png", 8, 8)
         .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "haro_16x16.png") // map
         .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "haro_16x16.png") // creatures
         .with_simple_console_no_bg(SCREEN_WIDTH, SCREEN_HEIGHT, "haro_16x16.png") // hud
-        .with_automatic_console_resize(false)
         .build()?;
 
     main_loop(context, State::new())

@@ -1,17 +1,40 @@
 use crate::prelude::*;
 
-pub fn spawn_player(ecs: &mut World, pos: Point) {
+pub fn spawn_player(ecs : &mut World, pos : Point) {
+    ecs.push(
+        (Player,
+            pos,
+            Render{
+                color: ColorPair::new(RGB::from_u8(255, 204, 51), BLACK),
+                glyph : to_cp437('@')
+            },
+            Health{ current: 10, max: 10 },
+            FieldOfView::new(8),
+        )
+    );
+}
+
+pub fn spawn_monster(
+    ecs: &mut World,
+    rng: &mut RandomNumberGenerator,
+    pos: Point
+) {
+    let (hp, name, glyph, color) = match rng.roll_dice(1, 10) {
+        1..=8 => rat(),
+        _ => ombolonian(),
+    };
+
     ecs.push((
-        Player,
+        Enemy,
         pos,
-        Render {
-            color: ColorPair::new(RGB::from_u8(255, 204, 51), BLACK),
-            glyph: to_cp437('@'),
-        },
+        Render { color, glyph },
+        ChasingPlayer,
         Health {
-            current: 10,
-            max: 10,
+            current: hp,
+            max: hp,
         },
+        Name(name),
+        FieldOfView::new(6),
     ));
 }
 
@@ -31,25 +54,6 @@ fn ombolonian() -> (i32, String, FontCharType, ColorPair) {
         to_cp437('o'),
         ColorPair::new(MAGENTA, BLACK),
     )
-}
-
-pub fn spawn_monster(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Point) {
-    let (hp, name, glyph, color) = match rng.roll_dice(1, 10) {
-        1..=8 => rat(),
-        _ => ombolonian(),
-    };
-
-    ecs.push((
-        Enemy,
-        pos,
-        Render { color, glyph },
-        ChasingPlayer,
-        Health {
-            current: hp,
-            max: hp,
-        },
-        Name(name),
-    ));
 }
 
 pub fn spawn_cosmic_egg(ecs: &mut World, pos: Point) {
