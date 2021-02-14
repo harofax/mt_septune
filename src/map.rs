@@ -23,7 +23,7 @@ impl Map {
     pub fn new() -> Self {
         Self {
             tiles: vec![TileType::Asphalt; NUM_TILES],
-            revealed_tiles: vec![false; NUM_TILES]
+            revealed_tiles: vec![true; NUM_TILES]
         }
     }
 

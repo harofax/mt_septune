@@ -15,6 +15,7 @@ pub fn player_input(
     let mut enemies = <(Entity, &Point)>::query().filter(component::<Enemy>());
 
     if let Some(key) = *key {
+
         let delta = match key {
             VirtualKeyCode::Left => Point::new(-1, 0),
             VirtualKeyCode::Right => Point::new(1, 0),
@@ -27,6 +28,16 @@ pub fn player_input(
                 .iter(ecs)
                 .find_map(|(entity, pos)| Some((*entity, *pos + delta)) )
                 .unwrap();
+
+        if key == VirtualKeyCode::E {
+            if let Ok(mut health) = ecs
+                .entry_mut(player_entity)
+                .unwrap()
+                .get_component_mut::<Health>()
+            {
+                health.current -= 5;
+            }
+        }
 
         let mut did_something = false;
         if delta.x !=0 || delta.y != 0 {
