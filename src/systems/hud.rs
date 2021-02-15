@@ -12,7 +12,7 @@ pub fn hud(ecs: &SubWorld) {
 
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(2);
-    draw_batch.print_centered(1, "Explore the Dungeon!");
+    draw_batch.print_centered(1, "THE COSMIC EGG BECKONS");
     draw_batch.bar_horizontal(
         Point::new(0,1),
         40,

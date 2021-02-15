@@ -2,7 +2,7 @@ use crate::prelude::*;
 use super::MapArchitect;
 use crate::map::TileType::Wall;
 
-const WALK_DISTANCE: usize = 400;
+const WALK_DISTANCE: usize = 200;
 const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT) as usize;
 const DESIRED_FLOOR : usize = NUM_TILES / 3; // how much of map to be floor
 

@@ -4,6 +4,7 @@ mod empty;
 mod dungeon_rooms;
 mod automata;
 mod drunkard;
+mod prefabs;
 
 use empty::EmptyArchitect;
 use dungeon_rooms::DungeonRoomsArchitect;
