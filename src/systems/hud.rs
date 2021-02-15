@@ -15,14 +15,14 @@ pub fn hud(ecs: &SubWorld) {
     draw_batch.print_centered(1, "THE COSMIC EGG BECKONS");
     draw_batch.bar_horizontal(
         Point::new(0,1),
-        40,
+        35,
         player_health.current,
         player_health.max,
         ColorPair::new(RED, BLACK)
     );
 
     draw_batch.print_color_centered_at(
-        Point::new(19, 0),
+        Point::new(15, 0),
         format!(" Health: {} / {} ",
         player_health.current,
         player_health.max
