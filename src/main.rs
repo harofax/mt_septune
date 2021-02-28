@@ -1,9 +1,9 @@
 #![warn(clippy::pedantic)]
 
-mod map;
-mod map_builder;
 mod camera;
 mod components;
+mod map;
+mod map_builder;
 mod spawner;
 mod systems;
 mod turn_state;
@@ -12,21 +12,21 @@ mod prelude {
     pub use bracket_lib::prelude::*;
     pub const SCREEN_WIDTH: i32 = 100;
     pub const SCREEN_HEIGHT: i32 = 60;
-    pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH/2;
-    pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT/2;
+    pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH / 2;
+    pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT / 2;
     pub const TURN_TIME: f32 = 60.0; // frame duration in millisecs
 
-    pub use crate::map::*;
-    pub use crate::map_builder::*;
     pub use crate::camera::*;
     pub use crate::components::*;
+    pub use crate::map::*;
+    pub use crate::map_builder::*;
     pub use crate::spawner::*;
     pub use crate::systems::*;
     pub use crate::turn_state::*;
 
-    pub use legion::*;
-    pub use legion::world::SubWorld;
     pub use legion::systems::CommandBuffer;
+    pub use legion::world::SubWorld;
+    pub use legion::*;
 }
 
 use prelude::*;
@@ -45,12 +45,13 @@ impl State {
         let mut ecs = World::default();
         let mut resources = Resources::default();
         let mut rng = RandomNumberGenerator::new();
-        let map_builder =  MapBuilder::new(&mut rng);
+        let map_builder = MapBuilder::new(&mut rng);
 
         spawn_player(&mut ecs, map_builder.player_start);
         spawn_cosmic_egg(&mut ecs, map_builder.egg_start);
 
-        map_builder.monster_spawns
+        map_builder
+            .monster_spawns
             .iter()
             .for_each(|pos| spawn_monster(&mut ecs, &mut rng, *pos));
 
@@ -72,14 +73,26 @@ impl State {
         ctx.set_active_console(2);
         ctx.print_color_centered(2, RED, BLACK, "DEATH APPROACHES");
         ctx.print_color_centered(3, VIOLETRED2, BLACK, "----------------");
-        ctx.print_color_centered(5, WHITE, BLACK,
-                                 "The infinite void of the cosmos starts closing in.");
-        ctx.print_color(SCREEN_WIDTH/2 - 12, 6, WHITE, BLACK,
-                                 "------------------");
-        ctx.print_color_centered(9, GOLD, BLACK,
-                                 "The mystery of SEPTUNE will remain undiscovered.");
-        ctx.print_color(SCREEN_WIDTH/2 - 20, 10, MAGENTA, BLACK,
-                        "------------------");
+        ctx.print_color_centered(
+            5,
+            WHITE,
+            BLACK,
+            "The infinite void of the cosmos starts closing in.",
+        );
+        ctx.print_color(SCREEN_WIDTH / 2 - 12, 6, WHITE, BLACK, "------------------");
+        ctx.print_color_centered(
+            9,
+            GOLD,
+            BLACK,
+            "The mystery of SEPTUNE will remain undiscovered.",
+        );
+        ctx.print_color(
+            SCREEN_WIDTH / 2 - 20,
+            10,
+            MAGENTA,
+            BLACK,
+            "------------------",
+        );
 
         ctx.print_color_centered(SCREEN_HEIGHT - 4, GREEN, BLACK, "Press ESC to try again.");
 
@@ -92,11 +105,21 @@ impl State {
         ctx.set_active_console(2);
         ctx.print_color_centered(2, GREEN, BLACK, "THE EGG HAS BEEN RETRIEVED");
         ctx.print_color_centered(3, GOLD, BLACK, "--------------------------");
-        ctx.print_color_centered(5, WHITE, BLACK, "The surface of the Egg is impossibly detailed,");
-        ctx.print_color_centered(6, WHITE, BLACK, "and you feel the vibrations of creation itself coursing");
+        ctx.print_color_centered(
+            5,
+            WHITE,
+            BLACK,
+            "The surface of the Egg is impossibly detailed,",
+        );
+        ctx.print_color_centered(
+            6,
+            WHITE,
+            BLACK,
+            "and you feel the vibrations of creation itself coursing",
+        );
         ctx.print_color_centered(7, WHITE, BLACK, "through every fiber of your being.");
 
-        ctx. print_color_centered(SCREEN_HEIGHT - 5, GREEN, BLACK, "Press ESC to start again.");
+        ctx.print_color_centered(SCREEN_HEIGHT - 5, GREEN, BLACK, "Press ESC to start again.");
 
         if let Some(VirtualKeyCode::Escape) = ctx.key {
             self.reset_game_state();
@@ -112,7 +135,8 @@ impl State {
         spawn_player(&mut self.ecs, map_builder.player_start);
         spawn_cosmic_egg(&mut self.ecs, map_builder.egg_start);
 
-        map_builder.monster_spawns
+        map_builder
+            .monster_spawns
             .iter()
             .for_each(|pos| spawn_monster(&mut self.ecs, &mut rng, *pos));
 
@@ -145,15 +169,16 @@ impl GameState for State {
         let current_state = self.resources.get::<TurnState>().unwrap().clone();
 
         match current_state {
-            TurnState::AwaitingInput => {
-                self.input_systems.execute(&mut self.ecs, &mut self.resources)
-            }
+            TurnState::AwaitingInput => self
+                .input_systems
+                .execute(&mut self.ecs, &mut self.resources),
             TurnState::PlayerTurn => {
-                self.player_systems.execute(&mut self.ecs, &mut self.resources);
+                self.player_systems
+                    .execute(&mut self.ecs, &mut self.resources);
             }
-            TurnState::MonsterTurn => {
-                self.monster_systems.execute(&mut self.ecs, &mut self.resources)
-            }
+            TurnState::MonsterTurn => self
+                .monster_systems
+                .execute(&mut self.ecs, &mut self.resources),
             TurnState::GameOver => {
                 self.game_over(ctx);
             }
@@ -164,7 +189,6 @@ impl GameState for State {
 
         // -- Render Draw Buffer
         render_draw_buffer(ctx).expect("Render Draw Buffer ERROR");
-
     }
 }
 
