@@ -6,12 +6,19 @@ mod dungeon_rooms;
 mod empty;
 mod labyruary;
 mod prefabs;
+mod themes;
 
 use automata::CellularAutomataArchitect;
 use drunkard::DrunkardsWalkArchitect;
 use dungeon_rooms::DungeonRoomsArchitect;
 use empty::EmptyArchitect;
 use labyruary::LabyruaryArchitect;
+use prefabs::apply_prefab;
+use themes::*;
+
+pub trait MapTheme: Sync + Send {
+    fn tile_to_render(&self, tile_type: TileType) -> (FontCharType, ColorPair);
+}
 
 trait MapArchitect {
     fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder;
@@ -24,6 +31,7 @@ pub struct MapBuilder {
     pub monster_spawns: Vec<Point>,
     pub player_start: Point,
     pub egg_start: Point,
+    pub theme: Box<dyn MapTheme>,
 }
 
 impl MapBuilder {
@@ -36,6 +44,16 @@ impl MapBuilder {
         };
 
         let mut mb = architect.new(rng);
+        apply_prefab(&mut mb, rng);
+
+        // So now we create new themes in the constructors of the mb:s,
+        // consider a better solution since we're essentially doing it twice
+        // (not that it matters for performance really)
+        mb.theme = match rng.range(0, 2) {
+            0 => DungeonTheme::new(),
+            _ => ForestTheme::new(),
+        };
+
         mb
     }
 
@@ -47,7 +65,7 @@ impl MapBuilder {
             .iter()
             .enumerate()
             .filter(|(idx, t)| {
-                **t == TileType::Asphalt
+                **t == TileType::Ground
                     && DistanceAlg::Pythagoras.distance2d(*start, self.map.index_to_point2d(*idx))
                         > 10.0
             })
@@ -195,7 +213,7 @@ impl MapBuilder {
         use std::cmp::{max, min};
         for x in min(x1, x2)..=max(x1, x2) {
             if let Some(idx) = self.map.try_idx(Point::new(x, y)) {
-                self.map.tiles[idx as usize] = TileType::Asphalt;
+                self.map.tiles[idx as usize] = TileType::Ground;
             }
         }
     }
@@ -204,7 +222,7 @@ impl MapBuilder {
         use std::cmp::{max, min};
         for y in min(y1, y2)..=max(y1, y2) {
             if let Some(idx) = self.map.try_idx(Point::new(x, y)) {
-                self.map.tiles[idx as usize] = TileType::Asphalt;
+                self.map.tiles[idx as usize] = TileType::Ground;
             }
         }
     }

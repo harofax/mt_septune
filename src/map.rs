@@ -7,7 +7,7 @@ pub enum TileType {
     Wall,
     Floorboard,
     Grass,
-    Asphalt,
+    Ground,
     Door,
 }
 
@@ -23,7 +23,7 @@ pub struct Map {
 impl Map {
     pub fn new() -> Self {
         Self {
-            tiles: vec![TileType::Asphalt; NUM_TILES],
+            tiles: vec![TileType::Ground; NUM_TILES],
             revealed_tiles: vec![true; NUM_TILES],
         }
     }

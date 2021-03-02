@@ -13,6 +13,7 @@ impl MapArchitect for LabyruaryArchitect {
             monster_spawns: Vec::new(),
             player_start: Point::zero(),
             egg_start: Point::zero(),
+            theme: super::themes::DungeonTheme::new(),
         };
 
         mb.fill(TileType::Grass);

@@ -4,7 +4,12 @@ use std::ops::Mul;
 #[system]
 #[read_component(FieldOfView)]
 #[read_component(Player)]
-pub fn map_render(#[resource] map: &Map, #[resource] camera: &Camera, ecs: &SubWorld) {
+pub fn map_render(
+    #[resource] map: &Map,
+    #[resource] camera: &Camera,
+    #[resource] theme: &Box<dyn MapTheme>,
+    ecs: &SubWorld,
+) {
     let mut fov = <&FieldOfView>::query().filter(component::<Player>());
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(0);
@@ -19,29 +24,31 @@ pub fn map_render(#[resource] map: &Map, #[resource] camera: &Camera, ecs: &SubW
             if map.in_bounds(pt)
                 && (player_fov.visible_tiles.contains(&pt) | map.revealed_tiles[idx])
             {
-                let (glyph, mut colors) = match map.tiles[idx] {
-                    TileType::Asphalt => (
-                        to_cp437('░'),
-                        ColorPair::new(RGB::from_u8(26, 26, 32), RGB::from_u8(11, 11, 15)),
-                    ),
-                    TileType::Wall => (
-                        to_cp437('┬'),
-                        ColorPair::new(RGB::from_u8(179, 75, 84), RGB::from_u8(214, 110, 105)),
-                    ),
-                    TileType::Door => (
-                        to_cp437('▬'),
-                        ColorPair::new(RGB::from_u8(214, 110, 105), RGB::from_u8(150, 100, 72)),
-                    ),
-                    TileType::Grass => (
-                        to_cp437('"'),
-                        ColorPair::new(RGB::from_u8(2, 219, 158), RGB::from_u8(2, 168, 129)),
-                    ),
-                    TileType::Floorboard => (
-                        to_cp437('-'),
-                        ColorPair::new(RGB::from_u8(102, 73, 53), RGB::from_u8(150, 100, 72)),
-                    ),
-                    _ => (to_cp437('!'), ColorPair::new(RED, PINK)),
-                };
+                let (glyph, mut colors) = theme.tile_to_render(map.tiles[idx]);
+
+                // match map.tiles[idx] {
+                //     TileType::Ground => (
+                //         to_cp437('░'),
+                //         ColorPair::new(RGB::from_u8(26, 26, 32), RGB::from_u8(11, 11, 15)),
+                //     ),
+                //     TileType::Wall => (
+                //         to_cp437('┬'),
+                //         ColorPair::new(RGB::from_u8(179, 75, 84), RGB::from_u8(214, 110, 105)),
+                //     ),
+                //     TileType::Door => (
+                //         to_cp437('▬'),
+                //         ColorPair::new(RGB::from_u8(214, 110, 105), RGB::from_u8(150, 100, 72)),
+                //     ),
+                //     TileType::Grass => (
+                //         to_cp437('"'),
+                //         ColorPair::new(RGB::from_u8(2, 219, 158), RGB::from_u8(2, 168, 129)),
+                //     ),
+                //     TileType::Floorboard => (
+                //         to_cp437('-'),
+                //         ColorPair::new(RGB::from_u8(102, 73, 53), RGB::from_u8(150, 100, 72)),
+                //     ),
+                //     _ => (to_cp437('!'), ColorPair::new(RED, PINK)),
+                // };
 
                 if !player_fov.visible_tiles.contains(&pt) {
                     colors.fg = colors.fg.to_greyscale().mul(0.6);

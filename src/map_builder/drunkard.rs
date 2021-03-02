@@ -1,36 +1,39 @@
-use crate::prelude::*;
 use super::MapArchitect;
 use crate::map::TileType::Wall;
+use crate::prelude::*;
 
 const WALK_DISTANCE: usize = 200;
 const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT) as usize;
-const DESIRED_FLOOR : usize = NUM_TILES / 3; // how much of map to be floor
+const DESIRED_FLOOR: usize = NUM_TILES / 3; // how much of map to be floor
 
-pub struct DrunkardsWalkArchitect{}
+pub struct DrunkardsWalkArchitect {}
 
 impl MapArchitect for DrunkardsWalkArchitect {
     fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder {
-        let mut mb = MapBuilder{
-            map : Map::new(),
+        let mut mb = MapBuilder {
+            map: Map::new(),
             rooms: Vec::new(),
             monster_spawns: Vec::new(),
             player_start: Point::zero(),
-            egg_start: Point::zero()
+            egg_start: Point::zero(),
+            theme: super::themes::DungeonTheme::new(),
         };
         mb.fill(TileType::Wall);
         let center = Point::new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
         self.drunkard(&center, rng, &mut mb.map);
 
-        while mb.map.tiles.iter()
-            .filter(|t| **t == TileType::Asphalt).count() < DESIRED_FLOOR
+        while mb
+            .map
+            .tiles
+            .iter()
+            .filter(|t| **t == TileType::Ground)
+            .count()
+            < DESIRED_FLOOR
         {
             self.drunkard(
-                &Point::new(
-                    rng.range(0, SCREEN_WIDTH),
-                    rng.range(0, SCREEN_HEIGHT)
-                ),
+                &Point::new(rng.range(0, SCREEN_WIDTH), rng.range(0, SCREEN_HEIGHT)),
                 rng,
-                &mut mb.map
+                &mut mb.map,
             );
 
             // This filters out unreachable spots
@@ -39,9 +42,10 @@ impl MapArchitect for DrunkardsWalkArchitect {
                 SCREEN_HEIGHT,
                 &vec![mb.map.point2d_to_index(center)],
                 &mb.map,
-                1024.0
+                1024.0,
             );
-            dijkstra_map.map
+            dijkstra_map
+                .map
                 .iter()
                 .enumerate()
                 .filter(|(_, distance)| *distance > &2000.0)
@@ -56,18 +60,13 @@ impl MapArchitect for DrunkardsWalkArchitect {
 }
 
 impl DrunkardsWalkArchitect {
-    fn drunkard(
-        &mut self,
-        start: &Point,
-        rng: &mut RandomNumberGenerator,
-        map: &mut Map
-    ) {
+    fn drunkard(&mut self, start: &Point, rng: &mut RandomNumberGenerator, map: &mut Map) {
         let mut drunkard_pos = start.clone();
         let mut distance_walked = 0;
 
         loop {
             let drunk_idx = map.point2d_to_index(drunkard_pos);
-            map.tiles[drunk_idx] = TileType::Asphalt;
+            map.tiles[drunk_idx] = TileType::Ground;
 
             match rng.range(0, 4) {
                 0 => drunkard_pos.x -= 1,

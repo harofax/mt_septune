@@ -11,10 +11,11 @@ impl MapArchitect for DungeonRoomsArchitect {
             monster_spawns: Vec::new(),
             player_start: Point::zero(),
             egg_start: Point::zero(),
+            theme: super::themes::DungeonTheme::new(),
         };
 
         mb.fill(TileType::Wall);
-        mb.carve_random_rooms(rng, TileType::Asphalt, (8, 14), (6, 13), false);
+        mb.carve_random_rooms(rng, TileType::Ground, (8, 14), (6, 13), false);
         mb.build_corridors(rng);
 
         mb.player_start = mb.rooms[0].center();
