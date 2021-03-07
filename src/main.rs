@@ -38,6 +38,8 @@ struct State {
     input_systems: Schedule,
     player_systems: Schedule,
     monster_systems: Schedule,
+    realtime_systems: Schedule,
+    render_systems: Schedule,
 }
 
 impl State {
@@ -57,7 +59,8 @@ impl State {
 
         resources.insert(map_builder.map);
         resources.insert(Camera::new(map_builder.player_start));
-        resources.insert(TurnState::AwaitingInput);
+        // resources.insert(TurnState::AwaitingInput);
+        resources.insert(TurnState::GamePlay);
         resources.insert(map_builder.theme);
 
         Self {
@@ -67,6 +70,8 @@ impl State {
             input_systems: build_input_scheduler(),
             player_systems: build_player_scheduler(),
             monster_systems: build_monster_scheduler(),
+            realtime_systems: build_realtime_scheduler(),
+            render_systems: build_render_scheduler(),
         }
     }
 
@@ -143,7 +148,7 @@ impl State {
 
         self.resources.insert(map_builder.map);
         self.resources.insert(Camera::new(map_builder.player_start));
-        self.resources.insert(TurnState::AwaitingInput);
+        self.resources.insert(TurnState::GamePlay);
         self.resources.insert(map_builder.theme);
     }
 }
@@ -161,7 +166,7 @@ impl GameState for State {
         ctx.set_active_console(2);
         ctx.cls();
 
-        //self.frame_time += ctx.frame_time_ms;
+        self.frame_time += ctx.frame_time_ms;
         // -- Execute systems
         self.resources.insert(ctx.key);
 
@@ -170,6 +175,28 @@ impl GameState for State {
 
         let current_state = self.resources.get::<TurnState>().unwrap().clone();
 
+        match current_state {
+            TurnState::GamePlay => {
+                if (self.frame_time > TURN_TIME) {
+                    self.frame_time = 0.0;
+                    self.realtime_systems
+                        .execute(&mut self.ecs, &mut self.resources);
+                }
+            }
+            TurnState::GameOver => {
+                self.game_over(ctx);
+            }
+            TurnState::Victory => {
+                self.victory(ctx);
+            }
+            _ => {}
+        }
+
+        self.render_systems
+            .execute(&mut self.ecs, &mut self.resources);
+        // self.realtime_systems
+        //     .execute(&mut self.ecs, &mut self.resources);
+        /*
         match current_state {
             TurnState::AwaitingInput => self
                 .input_systems
@@ -187,7 +214,7 @@ impl GameState for State {
             TurnState::Victory => {
                 self.victory(ctx);
             }
-        }
+        }*/
 
         // -- Render Draw Buffer
         render_draw_buffer(ctx).expect("Render Draw Buffer ERROR");
@@ -197,7 +224,7 @@ impl GameState for State {
 fn main() -> BError {
     let context = BTermBuilder::new()
         .with_title("Mt. Septune")
-        .with_fps_cap(70.0)
+        .with_fps_cap(30.0)
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
         .with_tile_dimensions(16, 16)
         .with_resource_path("resources/")
