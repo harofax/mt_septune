@@ -14,7 +14,7 @@ mod prelude {
     pub const SCREEN_HEIGHT: i32 = 60;
     pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH / 2;
     pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT / 2;
-    pub const TURN_TIME: f32 = 60.0; // frame duration in millisecs
+    pub const TURN_TIME: f32 = 200.0; // frame duration in millisecs
 
     pub use crate::camera::*;
     pub use crate::components::*;
@@ -35,8 +35,6 @@ struct State {
     ecs: World,
     resources: Resources,
     frame_time: f32,
-    input_systems: Schedule,
-    player_systems: Schedule,
     monster_systems: Schedule,
     realtime_systems: Schedule,
     render_systems: Schedule,
@@ -67,8 +65,6 @@ impl State {
             ecs,
             resources,
             frame_time: 0.0,
-            input_systems: build_input_scheduler(),
-            player_systems: build_player_scheduler(),
             monster_systems: build_monster_scheduler(),
             realtime_systems: build_realtime_scheduler(),
             render_systems: build_render_scheduler(),
@@ -177,9 +173,13 @@ impl GameState for State {
 
         match current_state {
             TurnState::GamePlay => {
-                if (self.frame_time > TURN_TIME) {
+                self.realtime_systems
+                    .execute(&mut self.ecs, &mut self.resources);
+                self.render_systems
+                    .execute(&mut self.ecs, &mut self.resources);
+                if self.frame_time > TURN_TIME {
                     self.frame_time = 0.0;
-                    self.realtime_systems
+                    self.monster_systems
                         .execute(&mut self.ecs, &mut self.resources);
                 }
             }
@@ -192,8 +192,6 @@ impl GameState for State {
             _ => {}
         }
 
-        self.render_systems
-            .execute(&mut self.ecs, &mut self.resources);
         // self.realtime_systems
         //     .execute(&mut self.ecs, &mut self.resources);
         /*
