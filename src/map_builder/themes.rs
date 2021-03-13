@@ -41,24 +41,24 @@ impl MapTheme for ForestTheme {
     fn tile_to_render(&self, tile_type: TileType) -> (FontCharType, ColorPair) {
         match tile_type {
             TileType::Ground => (
-                to_cp437(';'),
-                ColorPair::new(RGB::from_u8(51, 153, 153), RGB::from_u8(38, 96, 115)),
+                to_cp437(','),
+                ColorPair::new(RGB::from_u8(0, 140, 90), RGB::from_u8(0, 64, 64)),
             ),
             TileType::Wall => (
-                to_cp437('≈'),
-                ColorPair::new(RGB::from_u8(126, 186, 206), RGB::from_u8(38, 96, 115)),
+                to_cp437('♠'),
+                ColorPair::new(RGB::from_u8(0, 178, 89), RGB::from_u8(0, 64, 64)),
             ),
             TileType::Floorboard => (
-                to_cp437('.'),
-                ColorPair::new(RGB::from_u8(117, 190, 215), RGB::from_u8(0, 115, 153)),
+                to_cp437('≈'),
+                ColorPair::new(RGB::from_u8(26, 20, 13), RGB::from_u8(51, 41, 26)),
             ),
             TileType::Grass => (
-                to_cp437(','),
-                ColorPair::new(RGB::from_u8(11, 218, 218), RGB::from_u8(8, 145, 145)),
+                to_cp437('`'),
+                ColorPair::new(RGB::from_u8(0, 140, 105), RGB::from_u8(0, 64, 64)),
             ),
             TileType::Door => (
-                to_cp437('⌐'),
-                ColorPair::new(RGB::from_u8(126, 186, 206), RGB::from_u8(0, 115, 153)),
+                to_cp437('∩'),
+                ColorPair::new(RGB::from_u8(128, 128, 128), RGB::from_u8(0, 64, 64)),
             ),
         }
     }
