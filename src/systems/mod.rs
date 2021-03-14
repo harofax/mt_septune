@@ -11,6 +11,7 @@ mod movement;
 mod player_input;
 mod random_move;
 mod tooltips;
+mod use_item;
 
 // pub fn build_input_scheduler() -> Schedule {
 //     Schedule::builder()
@@ -44,7 +45,8 @@ pub fn build_monster_scheduler() -> Schedule {
         .add_system(random_move::random_move_system())
         .add_system(chasing::chasing_system())
         .flush()
-        // .add_system(combat::combat_system())
+        .add_system(use_item::use_items_system())
+        .add_system(combat::combat_system())
         // .flush()
         // .add_system(movement::movement_system())
         // .flush()
@@ -63,6 +65,7 @@ pub fn build_realtime_scheduler() -> Schedule {
         // .add_system(random_move::random_move_system())
         // .add_system(chasing::chasing_system())
         .flush()
+        .add_system(use_item::use_items_system())
         .add_system(combat::combat_system())
         .flush()
         .add_system(movement::movement_system())

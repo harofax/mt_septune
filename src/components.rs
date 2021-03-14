@@ -17,6 +17,15 @@ pub struct Enemy;
 pub struct Item;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ActivateItem {
+    pub used_by: Entity,
+    pub item: Entity,
+}
+
+#[derive(Clone, PartialEq)]
+pub struct Carried(pub Entity);
+
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct CosmicEgg;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
