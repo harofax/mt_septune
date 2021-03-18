@@ -1,5 +1,4 @@
 #![warn(clippy::pedantic)]
-
 mod camera;
 mod components;
 mod map;
@@ -12,8 +11,8 @@ mod prelude {
     pub use bracket_lib::prelude::*;
     pub const SCREEN_WIDTH: i32 = 100;
     pub const SCREEN_HEIGHT: i32 = 60;
-    pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH / 2;
-    pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT / 2;
+    pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH;
+    pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT;
     pub const TURN_TIME: f32 = 200.0; // frame duration in millisecs
 
     pub use crate::camera::*;
@@ -206,7 +205,7 @@ impl GameState for State {
 fn main() -> BError {
     let context = BTermBuilder::new()
         .with_title("Mt. Septune")
-        .with_fps_cap(30.0)
+        .with_fps_cap(60.0)
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
         .with_tile_dimensions(16, 16)
         .with_resource_path("resources/")

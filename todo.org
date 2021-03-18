@@ -1,0 +1,7 @@
+* Inbox
+** TODO tweak labyruary mapgen
+*** TODO change tile for prefab
+** TODO tweak combat
+** TODO better UI
+** TODO more prefabs
+** TODO more items

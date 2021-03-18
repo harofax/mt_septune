@@ -15,17 +15,22 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
             // entry_ref allows accessing an entity that's not returned in a query,
             // returns a reference to a single entity
             let item = ecs.entry_ref(activate.item);
+            let mut rng = RandomNumberGenerator::new();
             if let Ok(item) = item {
                 // if let Ok => lets us only run code if item/etc exists
                 //  get_component allows access to components assigned to the entity, but might be None
                 if let Ok(healing) = item.get_component::<ProvidesHealing>() {
                     // add healing to our list of healing events to process
-                    healing_to_apply.push((activate.used_by, healing.amount));
+                    healing_to_apply.push((activate.used_by, rng.range(2, healing.amount)));
                 }
 
                 if let Ok(_mapper) = item.get_component::<ProvidesDungeonMap>() {
                     // go through map tiles and make them all revealed
-                    map.revealed_tiles.iter_mut().for_each(|t| *t = true);
+                    map.revealed_tiles.iter_mut().for_each(|t| {
+                        if rng.roll_dice(1, 6) > 4 {
+                            *t = true;
+                        }
+                    });
                 }
             }
 
